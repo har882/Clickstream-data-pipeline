@@ -1,11 +1,41 @@
 package com.ignitrplus.data.pipeline.constants
 
-import com.ignitrplus.data.pipeline.service.FileReadearService.readFile
-import com.ignitrplus.data.pipeline.util.ApplicationUtil.createSparkSession
-import org.apache.spark.sql.DataFrame
 
 object ApplicationConstants {
 
-  var filePath = "data/input/clickstream/clickstream_log.csv"
-  var ig: DataFrame =readFile("filePath")(spark= createSparkSession("product","local"))
+  //SPARK_SESSION
+  val MASTER: String = "local"
+  val APP_NAME: String = "Clickstream Pipeline"
+
+  //DATASET
+  val CLICKSTREAM_DATASET: String = "data/input/clickstream/clickstream_log.csv"
+  val ITEM_DATASET: String = "data/input/item/item_data.csv"
+
+  //DATASET FORMAT
+  val READ_FORMAT:String = "csv"
+
+  // column name Clickstream
+  val EVENT_TIMESTAMP: String = "event_timestamp"
+  val SESSION_ID: String = "session_id"
+  val ITEM_ID: String = "item_id"
+  val REDIRECTION_SOURCE: String = "redirection_source"
+  // column name Item
+  val DEPARTMENT_NAME: String = "department_name"
+  val ITEM_PRICE: String = "item_price"
+
+
+  //Change DATATYPE
+  val COL_NAME_DATATYPE_CLICKSTREAM: Seq[String] = Seq(ApplicationConstants.EVENT_TIMESTAMP)
+  val COL_NAME_DATATYPE_ITEM: Seq[String] = Seq(ApplicationConstants.ITEM_PRICE)
+
+  //Primary key
+  val COL_NAME_PRIMARY_KEY_CLICKSTREAM: Seq[String] = Seq(ApplicationConstants.SESSION_ID, ApplicationConstants.ITEM_ID)
+  val COL_NAME_PRIMARY_KEY_ITEM: Seq[String] = Seq(ApplicationConstants.ITEM_ID)
+
+  //Lowercase col
+  val COL_NAME_LOWERCASE_CLICKSTREAM: Seq[String] = Seq(ApplicationConstants.REDIRECTION_SOURCE)
+  val COL_NAME_LOWERCASE_ITEM: Seq[String] = Seq(ApplicationConstants.DEPARTMENT_NAME)
+
+  val NEW_DATATYPE_CLICKSTREAM:Seq[String]= Seq("timestamp")
+  val NEW_DATATYPE_ITEM:Seq[String]= Seq("float")
 }
