@@ -5,31 +5,36 @@ import com.ignitrplus.data.pipeline.cleanser.Cleanser
 import org.apache.spark.sql.SparkSession
 
 object PipelineService {
-  def execute()(implicit spark: SparkSession): Unit = {
+  def executePipeline()(implicit spark: SparkSession): Unit = {
 
     /** read dataset */
     val dfClickStream = FileReaderService.readFile(CLICKSTREAM_DATASET,READ_FORMAT).drop("id")
     val dfItem = FileReaderService.readFile(ITEM_DATASET,READ_FORMAT)
 
+
     /**change datatype */
-    val dfDataType1 = Cleanser.changeDataType(dfClickStream, COL_NAME_DATATYPE_CLICKSTREAM,NEW_DATATYPE_CLICKSTREAM)
-    val dfDataType2 = Cleanser.changeDataType(dfItem, COL_NAME_DATATYPE_ITEM,NEW_DATATYPE_ITEM)
+    val dfDataTypeClickStream = Cleanser.changeDataType(dfClickStream, COL_NAME_DATATYPE_CLICKSTREAM,NEW_DATATYPE_CLICKSTREAM)
+    val dfDataTypeItem = Cleanser.changeDataType(dfItem, COL_NAME_DATATYPE_ITEM,NEW_DATATYPE_ITEM)
+
+    /** trim */
+    val dfTrimClickStream = Cleanser.trimColumn(dfDataTypeClickStream,COL_NAME_LOWERCASE_CLICKSTREAM)
+    val dfTrimItem = Cleanser.trimColumn(dfDataTypeItem,COL_NAME_LOWERCASE_ITEM)
 
     /**check and filter null row */
-    val dfNullCol1 = Cleanser.checkNFilterNullRow(dfDataType1, COL_NAME_PRIMARY_KEY_CLICKSTREAM)
-    val dfNullCol2 = Cleanser.checkNFilterNullRow(dfDataType2, COL_NAME_PRIMARY_KEY_ITEM)
+    val dfNullColClickStream = Cleanser.checkNFilterNullRow(dfDataTypeClickStream, COL_NAME_PRIMARY_KEY_CLICKSTREAM)
+    val dfNullColItem = Cleanser.checkNFilterNullRow(dfDataTypeItem, COL_NAME_PRIMARY_KEY_ITEM)
 
     /**filtering out not null Row */
-    val dfNotNullCol1 = Cleanser.filterNotNullRow(dfDataType1, COL_NAME_PRIMARY_KEY_CLICKSTREAM)
-    val dfNotNullCol2 = Cleanser.filterNotNullRow(dfDataType2, COL_NAME_PRIMARY_KEY_ITEM)
+    val dfNotNullColClickStream = Cleanser.filterNotNullRow(dfDataTypeClickStream, COL_NAME_PRIMARY_KEY_CLICKSTREAM)
+    val dfNotNullColItem = Cleanser.filterNotNullRow(dfDataTypeItem, COL_NAME_PRIMARY_KEY_ITEM)
 
     /**remove duplicate */
-    val dfNoDuplicate1 = Cleanser.removeDuplicate(dfDataType1, COL_NAME_PRIMARY_KEY_CLICKSTREAM)
-    //val dfNoDuplicate2 = Clenser.removeDuplicate(dfDataType2, COL_NAME_NULLKEY_DF2)
+    val dfNoDuplicateClickStream = Cleanser.removeDuplicate(dfDataTypeClickStream, COL_NAME_PRIMARY_KEY_CLICKSTREAM)
+    //val dfNoDuplicateItem = Clenser.removeDuplicate(dfDataTypeItem, COL_NAME_NULLKEY_DF2)
 
     /**convert to lowercase */
-    val dfLowerCase1 = Cleanser.convertToLowerCase(dfNoDuplicate1,COL_NAME_LOWERCASE_CLICKSTREAM)
-    val dfLowerCase2 = Cleanser.convertToLowerCase(dfNotNullCol2,COL_NAME_LOWERCASE_ITEM)
+    val dfLowerCaseClickStream = Cleanser.convertToLowerCase(dfNoDuplicateClickStream,COL_NAME_LOWERCASE_CLICKSTREAM)
+    val dfLowerCaseItem = Cleanser.convertToLowerCase(dfNotNullColItem,COL_NAME_LOWERCASE_ITEM)
 
 
   }

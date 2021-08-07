@@ -1,13 +1,13 @@
 package com.ignitrplus.data.pipeline.service
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.DataFrame
 
 object FileWriterService {
 
-  def writeNullRowsFile(df:DataFrame): Unit = {
+  def writeNullRowsFile(df:DataFrame,writeFormat: String): Unit = {
     df.write
       .option("header",true)
-      .format("csv")
+      .format(writeFormat)
       .save("data/output/pipeline-failures/null.csv")
 
 

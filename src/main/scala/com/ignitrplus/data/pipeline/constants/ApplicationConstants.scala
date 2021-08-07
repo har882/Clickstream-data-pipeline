@@ -13,7 +13,7 @@ object ApplicationConstants {
 
   //DATASET FORMAT
   val READ_FORMAT:String = "csv"
-
+  val WRITE_FORMAT:String = "csv"
   // column name Clickstream
   val EVENT_TIMESTAMP: String = "event_timestamp"
   val SESSION_ID: String = "session_id"
@@ -28,6 +28,9 @@ object ApplicationConstants {
   val COL_NAME_DATATYPE_CLICKSTREAM: Seq[String] = Seq(ApplicationConstants.EVENT_TIMESTAMP)
   val COL_NAME_DATATYPE_ITEM: Seq[String] = Seq(ApplicationConstants.ITEM_PRICE)
 
+  val NEW_DATATYPE_CLICKSTREAM:Seq[String]= Seq("timestamp")
+  val NEW_DATATYPE_ITEM:Seq[String]= Seq("float")
+
   //Primary key
   val COL_NAME_PRIMARY_KEY_CLICKSTREAM: Seq[String] = Seq(ApplicationConstants.SESSION_ID, ApplicationConstants.ITEM_ID)
   val COL_NAME_PRIMARY_KEY_ITEM: Seq[String] = Seq(ApplicationConstants.ITEM_ID)
@@ -36,6 +39,4 @@ object ApplicationConstants {
   val COL_NAME_LOWERCASE_CLICKSTREAM: Seq[String] = Seq(ApplicationConstants.REDIRECTION_SOURCE)
   val COL_NAME_LOWERCASE_ITEM: Seq[String] = Seq(ApplicationConstants.DEPARTMENT_NAME)
 
-  val NEW_DATATYPE_CLICKSTREAM:Seq[String]= Seq("timestamp")
-  val NEW_DATATYPE_ITEM:Seq[String]= Seq("float")
 }
