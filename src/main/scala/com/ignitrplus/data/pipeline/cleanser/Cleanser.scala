@@ -12,28 +12,29 @@ import org.apache.spark.sql.types.StringType
 object Cleanser {
 
 
-  def changeDataType(df: DataFrame, columnList: Seq[String], dt: Seq[String]): DataFrame = {
+  def dataTypeValidation(df: DataFrame, columnList: Seq[String], dataType: Seq[String],path:String): DataFrame = {
     var dfCrDataType = df
     for (i <- columnList.indices) {
-      if (dt(i) == "timestamp")
+      if (dataType(i) == "timestamp")
         dfCrDataType = dfCrDataType.withColumn(columnList(i), unix_timestamp(col(columnList(i)), "MM/dd/yyyy H:mm").cast("timestamp"))
       else
-        dfCrDataType = dfCrDataType.withColumn(columnList(i), col(columnList(i)).cast(dt(i)))
+        dfCrDataType = dfCrDataType.withColumn(columnList(i), col(columnList(i)).cast(dataType(i)))
     }
     //dfCrDataType.printSchema()
-    dfCrDataType.show()
+    /**Temporary*/ FileWriterService.writeFile(dfCrDataType,WRITE_FORMAT,path)
     dfCrDataType
   }
 
   /**first we should filter out string columns into list and
    * use column from the filter list to trim all string columns. */
-  def trimColumn(df: DataFrame): DataFrame = {
+  def trimColumn(df: DataFrame,path:String): DataFrame = {
     var dfTrimColumn = df
     val stringColumns = df.schema.fields.filter(_.dataType.isInstanceOf[StringType])
     stringColumns.foreach(f=>{
       dfTrimColumn = dfTrimColumn.withColumn(f.name,trim(col(f.name)))
     })
     //dfTrimColumn.show()
+    /**Temporary*/ FileWriterService.writeFile(dfTrimColumn,WRITE_FORMAT,path)
     dfTrimColumn
   }
 
@@ -54,32 +55,36 @@ object Cleanser {
 
     /** if null rows are preset in dfNullRows then write it in a separate file */
     if (dfNullRows.count() > 0)
-      FileWriterService.writeNullRowsFile(dfNullRows,WRITE_FORMAT,path)
-    dfNullRows
+      FileWriterService.writeFile(dfNullRows,WRITE_FORMAT,path)
+    dfCheckNullKeyRows
   }
 
 
   /** filtering out not null Row to further use it into our pipeline*/
-  def filterNotNullRow(df: DataFrame, columnList: Seq[String]): DataFrame = {
+  def filterNotNullRow(df: DataFrame, columnList: Seq[String],path:String): DataFrame = {
     val dfFilterNotNullRow = df.na.drop(columnList)
+    /**Temporary*/ FileWriterService.writeFile(dfFilterNotNullRow,WRITE_FORMAT,path)
     dfFilterNotNullRow
   }
 
   /** remove duplicates for List of column */
-  def removeDuplicate(df: DataFrame, columnList: Seq[String]): DataFrame = {
+  def removeDuplicate(df: DataFrame, columnList: Seq[String],path:String): DataFrame = {
 
     val winSpec = Window.partitionBy(columnList.map(col): _*).orderBy(desc("event_timestamp"))
     val primaryData: DataFrame = df.withColumn("row_num", row_number().over(winSpec))
-    val dfRemoveDuplicate: DataFrame = primaryData.filter("row_num == 1").drop("row_num")
+    val dfRemoveDuplicate: DataFrame = primaryData.filter("row_num == 1").drop("row_num").repartition(columnList.map(col): _*)
+
+    /**Temporary*/FileWriterService.writeFile(dfRemoveDuplicate,WRITE_FORMAT,path)
     dfRemoveDuplicate
   }
 
   /** covert Seq of column into lowercase  */
-  def convertToLowerCase(df: DataFrame, columnList: Seq[String]): DataFrame = {
+  def convertToLowerCase(df: DataFrame, columnList: Seq[String],path:String): DataFrame = {
     var dfConvertToLowerCase = df
     for (n <- columnList) dfConvertToLowerCase = df.withColumn(n, lower(col(n)))
 
-   // dfConvertToLowerCase.show()
+
+    /**Temporary*/FileWriterService.writeFile(dfConvertToLowerCase,WRITE_FORMAT,path)
     dfConvertToLowerCase
   }
 
