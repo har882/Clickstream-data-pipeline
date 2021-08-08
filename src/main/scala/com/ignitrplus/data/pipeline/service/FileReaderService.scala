@@ -1,5 +1,6 @@
 package com.ignitrplus.data.pipeline.service
 
+import com.ignitrplus.data.pipeline.exception.ExceptionFile.InvalidInputFileException
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import java.io.FileNotFoundException
@@ -9,11 +10,14 @@ object FileReaderService {
 
   def readFile(path: String,readformat: String)(implicit spark: SparkSession): DataFrame = {
 
+
       val dfRead = spark.read.format(readformat)
         .option("inferSchema", "true")
         .option("header", "true")
         .load(path)
-    dfRead
+      dfRead
+
+
 
 
   }

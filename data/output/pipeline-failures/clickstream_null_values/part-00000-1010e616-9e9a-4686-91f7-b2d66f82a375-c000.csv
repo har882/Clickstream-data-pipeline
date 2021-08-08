@@ -1,0 +1,2 @@
+event_timestamp,device_type,session_id,visitor_id,item_id,redirection_source,nullFlag
+2020-11-15T15:11:00.000+05:30,android,,I7099,B17543,GOOGLE,true

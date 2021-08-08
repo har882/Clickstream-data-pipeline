@@ -11,6 +11,9 @@ object ApplicationConstants {
   val CLICKSTREAM_DATASET: String = "data/input/clickstream/clickstream_log.csv"
   val ITEM_DATASET: String = "data/input/item/item_data.csv"
 
+  val CLICKSTREAM_NULL_ROWS_DATASET: String ="data/output/pipeline-failures/clickstream_null_values"
+  val ITEM_NULL_ROWS_DATASET: String ="data/output/pipeline-failures/item_null_values"
+
   //DATASET FORMAT
   val READ_FORMAT:String = "csv"
   val WRITE_FORMAT:String = "csv"
