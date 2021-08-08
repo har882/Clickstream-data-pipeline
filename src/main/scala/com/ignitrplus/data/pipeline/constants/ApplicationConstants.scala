@@ -11,12 +11,32 @@ object ApplicationConstants {
   val CLICKSTREAM_DATASET: String = "data/input/clickstream/clickstream_log.csv"
   val ITEM_DATASET: String = "data/input/item/item_data.csv"
 
+  //null values writing path
   val CLICKSTREAM_NULL_ROWS_DATASET: String ="data/output/pipeline-failures/clickstream_null_values"
   val ITEM_NULL_ROWS_DATASET: String ="data/output/pipeline-failures/item_null_values"
+
+  //output dataframe path  /**Temporary*/
+  val CLICKSTREAM_DATA_TYPE_DATASET: String ="data/output/output-dataframe-of-each-function/dataTypeValidation/clickstream"
+  val ITEM_DATA_TYPE_DATASET: String ="data/output/output-dataframe-of-each-function/dataTypeValidation/item"
+
+  val CLICKSTREAM_TRIM_DATASET: String ="data/output/output-dataframe-of-each-function/trimColumn/clickstream"
+  val ITEM_TRIM_DATASET: String ="data/output/output-dataframe-of-each-function/trimColumn/item"
+
+  val CLICKSTREAM_NOT_NULL_DATASET: String ="data/output/output-dataframe-of-each-function/filterNotNullRow/clickstream"
+  val ITEM_NOT_NULL_DATASET: String ="data/output/output-dataframe-of-each-function/filterNotNullRow/item"
+
+  val CLICKSTREAM_DEDUPLICATE_DATASET: String ="data/output/output-dataframe-of-each-function/removeDuplicates/clickstream"
+  val ITEM_DEDUPLICATE_DATASET: String ="data/output/output-dataframe-of-each-function/removeDuplicates/item"
+
+  val CLICKSTREAM_LOWERCASE_DATASET: String ="data/output/output-dataframe-of-each-function/convertToLowerCase/clickstream"
+  val ITEM_LOWERCASE_DATASET: String ="data/output/output-dataframe-of-each-function/convertToLowerCase/item"
+
+
 
   //DATASET FORMAT
   val READ_FORMAT:String = "csv"
   val WRITE_FORMAT:String = "csv"
+
   // column name Clickstream
   val EVENT_TIMESTAMP: String = "event_timestamp"
   val SESSION_ID: String = "session_id"

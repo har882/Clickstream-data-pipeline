@@ -4,7 +4,7 @@ import org.apache.spark.sql.DataFrame
 
 object FileWriterService {
 
-  def writeNullRowsFile(df:DataFrame,writeFormat: String, path:String): Unit = {
+  def writeFile(df:DataFrame, writeFormat: String, path:String): Unit = {
     df.write
       .option("header",true)
       .format(writeFormat)
