@@ -20,7 +20,6 @@ object Cleanser {
       else
         dfCrDataType = dfCrDataType.withColumn(columnList(i), col(columnList(i)).cast(dataType(i)))
     }
-    //dfCrDataType.printSchema()
     /**Temporary*/ FileWriterService.writeFile(dfCrDataType,WRITE_FORMAT,path)
     dfCrDataType
   }
@@ -33,7 +32,6 @@ object Cleanser {
     stringColumns.foreach(f=>{
       dfTrimColumn = dfTrimColumn.withColumn(f.name,trim(col(f.name)))
     })
-    //dfTrimColumn.show()
     /**Temporary*/ FileWriterService.writeFile(dfTrimColumn,WRITE_FORMAT,path)
     dfTrimColumn
   }
@@ -42,39 +40,37 @@ object Cleanser {
   /** This function does two jobs:
    * 1. check Null row for key Column and filter out it out
    * 2. if null row found then write it in a separate file
-   * Parameter :- df: dataframe , columnList: seq of primary key , path: path to write null rows */
-  def checkNFilterNullRow(df:DataFrame, columnList: Seq[String],path:String): DataFrame = {
+   * Parameter :- df: dataframe , primaryKeyList: seq of primary key , pathForNull: path to write null rows */
+  def checkNFilterNullRow(df:DataFrame, primaryKeyList: Seq[String], pathForNull:String, pathForNotNull:String): DataFrame = {
 
-    val columnNames:Seq[Column] = columnList.map(ex => col(ex))
+    val columnNames:Seq[Column] = primaryKeyList.map(ex => col(ex))
     val condition:Column = columnNames.map(ex => ex.isNull).reduce(_||_)
     val dfCheckNullKeyRows:DataFrame = df.withColumn("nullFlag" , when(condition,value = "true").otherwise(value = "false"))
-    dfCheckNullKeyRows.show()
 
     /** filter out all Null row in a dataframe,say dfNullRows */
     val  dfNullRows:DataFrame = dfCheckNullKeyRows.filter(dfCheckNullKeyRows("nullFlag")==="true")
+    val  dfNotNullRows:DataFrame = dfCheckNullKeyRows.filter(dfCheckNullKeyRows("nullFlag")==="false").drop("nullFlag")
 
     /** if null rows are preset in dfNullRows then write it in a separate file */
-    if (dfNullRows.count() > 0)
-      FileWriterService.writeFile(dfNullRows,WRITE_FORMAT,path)
-    dfCheckNullKeyRows
+    if (dfNullRows.count() > 0) {
+      FileWriterService.writeFile(dfNullRows,WRITE_FORMAT,pathForNull)
+    }
+    /**Temporary*/ FileWriterService.writeFile(dfNotNullRows,WRITE_FORMAT,pathForNotNull)
+    /** return Not null dataframe */
+    dfNotNullRows
   }
 
 
-  /** filtering out not null Row to further use it into our pipeline*/
-  def filterNotNullRow(df: DataFrame, columnList: Seq[String],path:String): DataFrame = {
-    val dfFilterNotNullRow = df.na.drop(columnList)
-    /**Temporary*/ FileWriterService.writeFile(dfFilterNotNullRow,WRITE_FORMAT,path)
-    dfFilterNotNullRow
-  }
+
 
   /** remove duplicates for List of column */
-  def removeDuplicate(df: DataFrame, columnList: Seq[String],path:String): DataFrame = {
+  def removeDuplicate(df: DataFrame, primaryKeyList: Seq[String], path:String): DataFrame = {
 
-    val winSpec = Window.partitionBy(columnList.map(col): _*).orderBy(desc("event_timestamp"))
+    val winSpec = Window.partitionBy(primaryKeyList.map(col): _*).orderBy(desc("event_timestamp"))
     val primaryData: DataFrame = df.withColumn("row_num", row_number().over(winSpec))
-    val dfRemoveDuplicate: DataFrame = primaryData.filter("row_num == 1").drop("row_num").repartition(columnList.map(col): _*)
+    val dfRemoveDuplicate: DataFrame = primaryData.filter("row_num == 1").drop("row_num").repartition(primaryKeyList.map(col): _*)
 
-    /**Temporary*/FileWriterService.writeFile(dfRemoveDuplicate,WRITE_FORMAT,path)
+    /**Temporary*///FileWriterService.writeFile(dfRemoveDuplicate,WRITE_FORMAT,path)
     dfRemoveDuplicate
   }
 
@@ -82,9 +78,7 @@ object Cleanser {
   def convertToLowerCase(df: DataFrame, columnList: Seq[String],path:String): DataFrame = {
     var dfConvertToLowerCase = df
     for (n <- columnList) dfConvertToLowerCase = df.withColumn(n, lower(col(n)))
-
-
-    /**Temporary*/FileWriterService.writeFile(dfConvertToLowerCase,WRITE_FORMAT,path)
+    /**Temporary*///FileWriterService.writeFile(dfConvertToLowerCase,WRITE_FORMAT,path)
     dfConvertToLowerCase
   }
 
