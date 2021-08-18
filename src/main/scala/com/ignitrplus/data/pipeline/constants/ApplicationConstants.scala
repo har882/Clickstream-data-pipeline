@@ -47,6 +47,7 @@ object ApplicationConstants {
   val SESSION_ID: String = "session_id"
   val ITEM_ID: String = "item_id"
   val REDIRECTION_SOURCE: String = "redirection_source"
+  val VISITOR_ID: String = "visitor_id"
 
   // column name Item
   val DEPARTMENT_NAME: String = "department_name"

@@ -16,7 +16,7 @@ object FileReaderService {
     if (dfRead.count == 0) {
       throw new InvalidInputFileException("The file chosen is empty, Please choose another file.")
     }
-    FileWriterService.writeFile(dfRead, WRITE_FORMAT, writePath)
+    //FileWriterService.writeFile(dfRead, WRITE_FORMAT, writePath)
     dfRead
 
 

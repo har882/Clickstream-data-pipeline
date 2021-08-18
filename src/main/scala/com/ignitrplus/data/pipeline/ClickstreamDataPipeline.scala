@@ -3,7 +3,7 @@ package com.ignitrplus.data.pipeline
 
 import com.ignitrplus.data.pipeline.constants.ApplicationConstants
 import com.ignitrplus.data.pipeline.constants.ApplicationConstants.{APP_NAME, MASTER}
-import com.ignitrplus.data.pipeline.exception.ExceptionFile.InvalidInputFileException
+import com.ignitrplus.data.pipeline.exception.ExceptionFile.{InvalidInputFileException, NullValuesException}
 import com.ignitrplus.data.pipeline.service.PipelineService
 import com.ignitrplus.data.pipeline.util.ApplicationUtil
 import org.apache.spark.sql.{AnalysisException, SparkSession}
@@ -27,6 +27,9 @@ object ClickstreamDataPipeline {
         sys.exit(ApplicationConstants.FAILURE_EXIT_CODE)
       case ex: IndexOutOfBoundsException =>
         println(ex + "Index out of bound")
+        sys.exit(ApplicationConstants.FAILURE_EXIT_CODE)
+      case ex: NullValuesException =>
+        println(ex + "Null Values Found")
         sys.exit(ApplicationConstants.FAILURE_EXIT_CODE)
       case ex: Exception =>
         println(ex + " Unknown Exception has occurred")

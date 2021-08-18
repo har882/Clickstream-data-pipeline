@@ -20,20 +20,24 @@ object Cleanser {
       else
         dfCrDataType = dfCrDataType.withColumn(columnList(i), col(columnList(i)).cast(dataType(i)))
     }
-    /**Temporary*/ FileWriterService.writeFile(dfCrDataType,WRITE_FORMAT,path)
+    /**Temporary*/// FileWriterService.writeFile(dfCrDataType,WRITE_FORMAT,path)
+
     dfCrDataType
   }
 
-  /**first we should filter out string columns into list and
-   * use column from the filter list to trim all string columns. */
+  /** @param df the dataframe taken as an input
+   *  @return dataframe with no whitespaces */
   def trimColumn(df: DataFrame,path:String): DataFrame = {
-    var dfTrimColumn = df
-    val stringColumns = df.schema.fields.filter(_.dataType.isInstanceOf[StringType])
-    stringColumns.foreach(f=>{
-      dfTrimColumn = dfTrimColumn.withColumn(f.name,trim(col(f.name)))
-    })
-    /**Temporary*/ FileWriterService.writeFile(dfTrimColumn,WRITE_FORMAT,path)
-    dfTrimColumn
+    var trimmedDF: DataFrame = df
+    for(n<-df.columns) trimmedDF = df.withColumn(n,trim(col(n)))
+    trimmedDF
+//    var dfTrimColumn = df
+//    val stringColumns = df.schema.fields.filter(_.dataType.isInstanceOf[StringType])
+//    stringColumns.foreach(f=>{
+//      dfTrimColumn = dfTrimColumn.withColumn(f.name,trim(col(f.name)))
+//    })
+//    /**Temporary*/ //FileWriterService.writeFile(dfTrimColumn,WRITE_FORMAT,path)
+//    dfTrimColumn
   }
 
 
@@ -52,10 +56,10 @@ object Cleanser {
     val  dfNotNullRows:DataFrame = dfCheckNullKeyRows.filter(dfCheckNullKeyRows("nullFlag")==="false").drop("nullFlag")
 
     /** if null rows are preset in dfNullRows then write it in a separate file */
-    if (dfNullRows.count() > 0) {
-      FileWriterService.writeFile(dfNullRows,WRITE_FORMAT,pathForNull)
-    }
-    /**Temporary*/ FileWriterService.writeFile(dfNotNullRows,WRITE_FORMAT,pathForNotNull)
+//    if (dfNullRows.count() > 0) {
+//      FileWriterService.writeFile(dfNullRows,WRITE_FORMAT,pathForNull)
+//    }
+    /**Temporary*/ //FileWriterService.writeFile(dfNotNullRows,WRITE_FORMAT,pathForNotNull)
     /** return Not null dataframe */
     dfNotNullRows
   }
@@ -67,19 +71,29 @@ object Cleanser {
   def removeDuplicate(df: DataFrame, primaryKeyList: Seq[String], path:String): DataFrame = {
 
     val winSpec = Window.partitionBy(primaryKeyList.map(col): _*).orderBy(desc("event_timestamp"))
-    val primaryData: DataFrame = df.withColumn("row_num", row_number().over(winSpec))
-    val dfRemoveDuplicate: DataFrame = primaryData.filter("row_num == 1").drop("row_num").repartition(primaryKeyList.map(col): _*)
 
-    /**Temporary*///FileWriterService.writeFile(dfRemoveDuplicate,WRITE_FORMAT,path)
+    val primaryData: DataFrame = df.withColumn("row_num", row_number().over(winSpec))
+    //primaryData.show()
+    val dfRemoveDuplicate: DataFrame = primaryData.filter("row_num == 1")
+    //dfRemoveDuplicate.show()
+    /**Temporary*///FileWriterService.writeFile(dfRemoveDuplicate,WRITE_FORMAT,path)dfRemoveDuplicate.show()
     dfRemoveDuplicate
   }
 
   /** covert Seq of column into lowercase  */
-  def convertToLowerCase(df: DataFrame, columnList: Seq[String],path:String): DataFrame = {
+  def convertToLowerCase(df: DataFrame, columnList: Seq[String]): DataFrame = {
     var dfConvertToLowerCase = df
     for (n <- columnList) dfConvertToLowerCase = df.withColumn(n, lower(col(n)))
     /**Temporary*///FileWriterService.writeFile(dfConvertToLowerCase,WRITE_FORMAT,path)
     dfConvertToLowerCase
   }
+
+//  def convertToLowerCase(df: DataFrame, columnTobeModified: Seq[String]): DataFrame = {
+//    var dfLowerCase: DataFrame = df
+//    for (columnToModify <- columnTobeModified) {
+//      dfLowerCase = dfLowerCase.withColumn(columnToModify, lower(col(columnToModify)))
+//    }
+//    dfLowerCase
+//  }
 
 }

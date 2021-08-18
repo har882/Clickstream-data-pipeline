@@ -2,6 +2,8 @@ package com.ignitrplus.data.pipeline.service
 
 import com.ignitrplus.data.pipeline.constants.ApplicationConstants._
 import com.ignitrplus.data.pipeline.cleanser.Cleanser
+import com.ignitrplus.data.pipeline.constants.DqCheckConstants.COLUMNS_CHECK_NULL_CLICKSTREAM
+import com.ignitrplus.data.pipeline.dqcheck.DqCheck
 import org.apache.spark.sql.SparkSession
 
 object PipelineService {
@@ -29,7 +31,9 @@ object PipelineService {
     //val dfNoDuplicateItem = Cleanser.removeDuplicate(dfDataTypeItem, COLUMNS_PRIMARY_KEY_ITEM,ITEM_DEDUPLICATE_DATASET)
 
     /**convert to lowercase */
-    val dfLowerCaseClickStream = Cleanser.convertToLowerCase(dfNoDuplicateClickStream,COLUMNS_LOWERCASE_CLICKSTREAM,CLICKSTREAM_LOWERCASE_DATASET)
-    val dfLowerCaseItem = Cleanser.convertToLowerCase(dfNotNullColItem,COLUMNS_LOWERCASE_ITEM,ITEM_LOWERCASE_DATASET)
+    val dfLowerCaseClickStream = Cleanser.convertToLowerCase(dfNoDuplicateClickStream,COLUMNS_LOWERCASE_CLICKSTREAM)
+    val dfLowerCaseItem = Cleanser.convertToLowerCase(dfNotNullColItem,COLUMNS_LOWERCASE_ITEM)
+    dfLowerCaseClickStream.show()
+    val dfCheckNull = DqCheck.checkNull( dfLowerCaseClickStream,COLUMNS_CHECK_NULL_CLICKSTREAM)
   }
 }
