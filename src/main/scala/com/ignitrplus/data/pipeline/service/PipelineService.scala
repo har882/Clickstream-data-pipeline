@@ -2,6 +2,7 @@ package com.ignitrplus.data.pipeline.service
 
 import com.ignitrplus.data.pipeline.constants.ApplicationConstants._
 import com.ignitrplus.data.pipeline.cleanser.Cleanser
+import com.ignitrplus.data.pipeline.cleanser.Cleanser.removeDuplicate
 import com.ignitrplus.data.pipeline.constants.DqCheckConstants.COLUMNS_CHECK_NULL_CLICKSTREAM
 import com.ignitrplus.data.pipeline.dqcheck.DqCheck
 import org.apache.spark.sql.SparkSession
@@ -27,13 +28,20 @@ object PipelineService {
     val dfNotNullColItem = Cleanser.checkNFilterNullRow(dfTrimItem, COLUMNS_PRIMARY_KEY_ITEM,ITEM_NULL_ROWS_DATASET_PATH,ITEM_NOT_NULL_DATASET)
 
     /**remove duplicate */
-    val dfNoDuplicateClickStream = Cleanser.removeDuplicate(dfNotNullColClickStream, COLUMNS_PRIMARY_KEY_CLICKSTREAM,CLICKSTREAM_DEDUPLICATE_DATASET)
-    //val dfNoDuplicateItem = Cleanser.removeDuplicate(dfDataTypeItem, COLUMNS_PRIMARY_KEY_ITEM,ITEM_DEDUPLICATE_DATASET)
+    val dfNoDuplicateClickStream = Cleanser.removeDuplicate(dfNotNullColClickStream,COLUMNS_PRIMARY_KEY_CLICKSTREAM,Some(EVENT_TIMESTAMP_OPTION))
+    val dfNoDuplicateItemDf = removeDuplicate(dfNotNullColItem,COLUMNS_PRIMARY_KEY_ITEM,None)
 
     /**convert to lowercase */
     val dfLowerCaseClickStream = Cleanser.convertToLowerCase(dfNoDuplicateClickStream,COLUMNS_LOWERCASE_CLICKSTREAM)
-    val dfLowerCaseItem = Cleanser.convertToLowerCase(dfNotNullColItem,COLUMNS_LOWERCASE_ITEM)
-    dfLowerCaseClickStream.show()
+    val dfLowerCaseItem = Cleanser.convertToLowerCase(dfNoDuplicateItemDf,COLUMNS_LOWERCASE_ITEM)
+
+
+    /**DQCheck functions*/
+      /**check null values*/
     val dfCheckNull = DqCheck.checkNull( dfLowerCaseClickStream,COLUMNS_CHECK_NULL_CLICKSTREAM)
+
+    /**check unmatched item id*/
+    val checkUnMatchedItemId = DqCheck.checkUnMatchedItemId(dfLowerCaseClickStream,dfLowerCaseItem)
+
   }
 }

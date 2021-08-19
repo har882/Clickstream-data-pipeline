@@ -4,4 +4,6 @@ object ExceptionFile {
   class InvalidInputFileException(s:String) extends Exception(s){}
 
   class NullValuesException(s:String) extends Exception(s){}
+
+  class UnMatchedItemIdException(s:String) extends Exception(s){}
 }

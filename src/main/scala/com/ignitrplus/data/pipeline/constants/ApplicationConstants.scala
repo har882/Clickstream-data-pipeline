@@ -71,4 +71,7 @@ object ApplicationConstants {
   val COLUMNS_LOWERCASE_ITEM: Seq[String] = Seq(ApplicationConstants.DEPARTMENT_NAME)
 
   val FAILURE_EXIT_CODE:Int = 1
+
+  val ROW_NUMBER:String = "row_number"
+  val EVENT_TIMESTAMP_OPTION:String= "event_timestamp"
 }

@@ -1,6 +1,6 @@
 package com.ignitrplus.data.pipeline.cleanser
 
-import com.ignitrplus.data.pipeline.constants.ApplicationConstants.WRITE_FORMAT
+import com.ignitrplus.data.pipeline.constants.ApplicationConstants.{ROW_NUMBER, WRITE_FORMAT}
 import com.ignitrplus.data.pipeline.service.FileWriterService
 import org.apache.spark.sql.{Column, DataFrame}
 import org.apache.spark.sql.expressions.Window
@@ -68,16 +68,18 @@ object Cleanser {
 
 
   /** remove duplicates for List of column */
-  def removeDuplicate(df: DataFrame, primaryKeyList: Seq[String], path:String): DataFrame = {
+  def removeDuplicate(df: DataFrame, primaryKeyColumns: Seq[String],
+                      orderByColumn: Option[String]): DataFrame = {
 
-    val winSpec = Window.partitionBy(primaryKeyList.map(col): _*).orderBy(desc("event_timestamp"))
-
-    val primaryData: DataFrame = df.withColumn("row_num", row_number().over(winSpec))
-    //primaryData.show()
-    val dfRemoveDuplicate: DataFrame = primaryData.filter("row_num == 1")
-    //dfRemoveDuplicate.show()
-    /**Temporary*///FileWriterService.writeFile(dfRemoveDuplicate,WRITE_FORMAT,path)dfRemoveDuplicate.show()
-    dfRemoveDuplicate
+    val dfDropDuplicates: DataFrame = orderByColumn match {
+      case Some(orderCol) => {
+        val windowSpec = Window.partitionBy(primaryKeyColumns.map(col): _*).orderBy(desc(orderCol))
+        df.withColumn(colName = ROW_NUMBER, row_number().over(windowSpec))
+          .filter(col(ROW_NUMBER) === 1).drop(ROW_NUMBER)
+      }
+      case _ => df.dropDuplicates(primaryKeyColumns)
+    }
+    dfDropDuplicates
   }
 
   /** covert Seq of column into lowercase  */
