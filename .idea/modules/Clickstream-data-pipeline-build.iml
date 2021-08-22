@@ -104,6 +104,8 @@
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/zinc-persist_2.12-1.5.7.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/zinc_2.12-1.5.7.jar!/" />
           <root url="jar://$USER_HOME$/AppData/Local/Coursier/cache/v1/https/repo.scala-sbt.org/scalasbt/sbt-plugin-releases/org.jetbrains/sbt-ide-settings/scala_2.12/sbt_1.0/1.1.0/jars/sbt-ide-settings.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../project/lib/mysql-connector-java-8.0.26.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../project/lib/sqljdbc42.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

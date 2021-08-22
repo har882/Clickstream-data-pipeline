@@ -45,13 +45,14 @@ object ApplicationConstants {
   // column name Clickstream
   val EVENT_TIMESTAMP: String = "event_timestamp"
   val SESSION_ID: String = "session_id"
-  val ITEM_ID: String = "item_id"
+  val CLICKED_ITEM_ID: String = "clicked_item_id"
   val REDIRECTION_SOURCE: String = "redirection_source"
   val VISITOR_ID: String = "visitor_id"
 
   // column name Item
   val DEPARTMENT_NAME: String = "department_name"
   val ITEM_PRICE: String = "item_price"
+  val ITEM_ID: String = "item_id"
 
 
   //column for Changing DATATYPE
@@ -63,7 +64,7 @@ object ApplicationConstants {
   val NEW_DATATYPE_ITEM:Seq[String]= Seq("float")
 
   //Primary key
-  val COLUMNS_PRIMARY_KEY_CLICKSTREAM: Seq[String] = Seq(ApplicationConstants.SESSION_ID, ApplicationConstants.ITEM_ID)
+  val COLUMNS_PRIMARY_KEY_CLICKSTREAM: Seq[String] = Seq(ApplicationConstants.SESSION_ID, ApplicationConstants.CLICKED_ITEM_ID)
   val COLUMNS_PRIMARY_KEY_ITEM: Seq[String] = Seq(ApplicationConstants.ITEM_ID)
 
   //Lowercase column
@@ -74,4 +75,13 @@ object ApplicationConstants {
 
   val ROW_NUMBER:String = "row_number"
   val EVENT_TIMESTAMP_OPTION:String= "event_timestamp"
+
+  /** Write to SQL Database */
+  val JDBC_DRIVER : String = "com.mysql.cj.jdbc.Driver"
+  val USER_NAME : String = "root"
+  val KEY_PASSWORD : String = "4884"
+  val SQL_URL_STAGING : String = "jdbc:mysql://localhost:3306/ignite_staging"
+  val SQL_URL_PROD : String = "jdbc:mysql://localhost:3306/ignite_prod"
+  val TABLE_NAME :String ="finaldata"
+
 }

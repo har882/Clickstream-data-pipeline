@@ -1,3 +1,3 @@
-[debug] not up to date. inChanged = true, force = false
+[debug] not up to date. inChanged = false, force = false
 [debug] Updating ProjectRef(uri("file:/C:/Users/harsh/OneDrive/Documents/GitHub/Clickstream-data-pipeline-product/project/"), "clickstream-data-pipeline-product-build")...
 [debug] Done updating ProjectRef(uri("file:/C:/Users/harsh/OneDrive/Documents/GitHub/Clickstream-data-pipeline-product/project/"), "clickstream-data-pipeline-product-build")

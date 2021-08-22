@@ -5,6 +5,8 @@ import com.ignitrplus.data.pipeline.cleanser.Cleanser
 import com.ignitrplus.data.pipeline.cleanser.Cleanser.removeDuplicate
 import com.ignitrplus.data.pipeline.constants.DqCheckConstants.COLUMNS_CHECK_NULL_CLICKSTREAM
 import com.ignitrplus.data.pipeline.dqcheck.DqCheck
+import com.ignitrplus.data.pipeline.service.FileWriterService.sqlWrite
+import com.ignitrplus.data.pipeline.transform.Transform
 import org.apache.spark.sql.SparkSession
 
 object PipelineService {
@@ -36,12 +38,16 @@ object PipelineService {
     val dfLowerCaseItem = Cleanser.convertToLowerCase(dfNoDuplicateItemDf,COLUMNS_LOWERCASE_ITEM)
 
 
+
     /**DQCheck functions*/
       /**check null values*/
-    val dfCheckNull = DqCheck.checkNull( dfLowerCaseClickStream,COLUMNS_CHECK_NULL_CLICKSTREAM)
+//    val dfCheckNull = DqCheck.checkNull( dfLowerCaseClickStream,COLUMNS_CHECK_NULL_CLICKSTREAM)
+//
+//    /**join by item id*/
+    val joinedData = Transform.join(dfLowerCaseClickStream,dfLowerCaseItem)
+    sqlWrite(joinedData,TABLE_NAME,SQL_URL_STAGING)
 
-    /**check unmatched item id*/
-    val checkUnMatchedItemId = DqCheck.checkUnMatchedItemId(dfLowerCaseClickStream,dfLowerCaseItem)
+
 
   }
 }
